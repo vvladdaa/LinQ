@@ -1,0 +1,496 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+var firms = new List<Firm>
+{
+    new Firm
+    {
+        Name = "White Food Group",
+        FoundedAt = DateTime.Today.AddDays(-123),
+        BusinessProfile = "Маркетинг",
+        Director = "John Black",
+        EmployeeCount = 120,
+        Address = "10 Baker Street, London",
+        Employees = new List<Employee>
+        {
+            new Employee("Lionel Messi", "Менеджер", "231234567", "lionel@example.com", 60000m),
+            new Employee("Diana White", "Дизайнер", "441112223", "diana@example.com", 45000m)
+        }
+    },
+    new Firm
+    {
+        Name = "Bright IT Solutions",
+        FoundedAt = DateTime.Today.AddYears(-4),
+        BusinessProfile = "IT",
+        Director = "Anne White",
+        EmployeeCount = 350,
+        Address = "25 Oxford Street, Manchester",
+        Employees = new List<Employee>
+        {
+            new Employee("Lionel Brown", "Розробник", "239998877", "lionel.brown@example.com", 80000m),
+            new Employee("Diana Green", "Менеджер", "447778889", "diana.green@example.com", 55000m)
+        }
+    },
+    new Firm
+    {
+        Name = "Black & White Media",
+        FoundedAt = DateTime.Today.AddYears(-1),
+        BusinessProfile = "Маркетинг",
+        Director = "Mark Black",
+        EmployeeCount = 80,
+        Address = "5 King Street, London",
+        Employees = new List<Employee>
+        {
+            new Employee("David Black", "Менеджер", "231010101", "david@example.com", 52000m)
+        }
+    },
+    new Firm
+    {
+        Name = "Green Foods",
+        FoundedAt = DateTime.Today.AddYears(-3),
+        BusinessProfile = "Виробництво",
+        Director = "Peter Green",
+        EmployeeCount = 250,
+        Address = "7 High Street, Bristol",
+        Employees = new List<Employee>()
+    }
+};
+
+var phones = new List<Phone>
+{
+    new Phone("Galaxy S10", "Samsung", 350m, DateTime.Today.AddYears(-7)),
+    new Phone("iPhone 14", "Apple", 650m, DateTime.Today.AddYears(-3)),
+    new Phone("Pixel 9", "Google", 800m, DateTime.Today.AddYears(-1)),
+    new Phone("Galaxy A55", "Samsung", 500m, DateTime.Today.AddMonths(-6))
+};
+
+RunMenu(firms, phones);
+
+static void RunMenu(List<Firm> firms, List<Phone> phones)
+{
+    while (true)
+    {
+        Console.WriteLine("\nГоловне меню");
+        Console.WriteLine("1 — Запити про фірми");
+        Console.WriteLine("2 — Запити про співробітників");
+        Console.WriteLine("3 — Запити про телефони");
+        Console.WriteLine("0 — Вихід");
+
+        int choice = ReadInt("Ваш вибір: ");
+
+        switch (choice)
+        {
+            case 1:
+                FirmsMenu(firms);
+                break;
+            case 2:
+                EmployeesMenu(firms);
+                break;
+            case 3:
+                PhonesMenu(phones);
+                break;
+            case 0:
+                Console.WriteLine("До побачення!");
+                return;
+            default:
+                Console.WriteLine("Такого пункту меню немає.");
+                break;
+        }
+    }
+}
+
+static void FirmsMenu(List<Firm> firms)
+{
+    while (true)
+    {
+        Console.WriteLine("\nФірми(Вибір 1-11)");
+        Console.WriteLine("1 — Усі фірми");
+        Console.WriteLine("2 — У назві є слово Food");
+        Console.WriteLine("3 — Профіль: маркетинг");
+        Console.WriteLine("4 — Профіль: маркетинг або IT");
+        Console.WriteLine("5 — Понад 100 співробітників");
+        Console.WriteLine("6 — Від 100 до 300 співробітників");
+        Console.WriteLine("7 — Фірми в Лондоні");
+        Console.WriteLine("8 — Прізвище директора White");
+        Console.WriteLine("9 — Засновані більше двох років тому");
+        Console.WriteLine("10 — Засновані рівно 123 дні тому");
+        Console.WriteLine("11 — Директор Black, у назві є White");
+        Console.WriteLine("0 — Назад");
+
+        int choice = ReadInt("Ваш вибір: ");
+
+        switch (choice)
+        {
+            case 1:
+                Print("Усі фірми:", firms);
+                break;
+            case 2:
+                Print("Фірми, у назві яких є Food:",
+                    firms.Where(f => f.Name.Contains(
+                        "Food", StringComparison.OrdinalIgnoreCase)));
+                break;
+            case 3:
+                Print("Фірми з профілем маркетинг:",
+                    firms.Where(f => f.BusinessProfile == "Маркетинг"));
+                break;
+            case 4:
+                Print("Фірми з профілем маркетинг або IT:",
+                    firms.Where(f => f.BusinessProfile == "Маркетинг" ||
+                                     f.BusinessProfile == "IT"));
+                break;
+            case 5:
+                Print("Фірми, де понад 100 співробітників:",
+                    firms.Where(f => f.EmployeeCount > 100));
+                break;
+            case 6:
+                Print("Фірми, де від 100 до 300 співробітників:",
+                    firms.Where(f => f.EmployeeCount >= 100 &&
+                                     f.EmployeeCount <= 300));
+                break;
+            case 7:
+                Print("Фірми в Лондоні:",
+                    firms.Where(f => f.Address.Contains(
+                        "London", StringComparison.OrdinalIgnoreCase)));
+                break;
+            case 8:
+                Print("Фірми, у яких прізвище директора White:",
+                    firms.Where(f => GetSurname(f.Director) == "White"));
+                break;
+            case 9:
+                Print("Фірми, засновані більше двох років тому:",
+                    firms.Where(f => f.FoundedAt.Date <
+                                     DateTime.Today.AddYears(-2)));
+                break;
+            case 10:
+                Print("Фірми, засновані рівно 123 дні тому:",
+                    firms.Where(f => f.FoundedAt.Date ==
+                                     DateTime.Today.AddDays(-123)));
+                break;
+            case 11:
+                Print("Директор Black, у назві фірми є White:",
+                    firms.Where(f => GetSurname(f.Director) == "Black" &&
+                                     f.Name.Contains(
+                                         "White",
+                                         StringComparison.OrdinalIgnoreCase)));
+                break;
+            case 0:
+                return;
+            default:
+                Console.WriteLine("Такого пункту меню немає.");
+                break;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+static void EmployeesMenu(List<Firm> firms)
+{
+    while (true)
+    {
+        Console.WriteLine("\nАнкета співробитників");
+        Console.WriteLine("1 — Усі співробітники конкретної фірми");
+        Console.WriteLine("2 — Співробітники фірми із зарплатою вище заданої");
+        Console.WriteLine("3 — Менеджери всіх фірм");
+        Console.WriteLine("4 — Телефон починається з 23");
+        Console.WriteLine("5 — Email починається з di");
+        Console.WriteLine("6 — Ім'я Lionel");
+        Console.WriteLine("0 — Назад");
+
+        int choice = ReadInt("Ваш вибір: ");
+
+        switch (choice)
+        {
+            case 1:
+            case 2:
+                {
+                    Print("Доступні фірми:", firms.Select(f => f.Name));
+                    string firmName = ReadString("Введіть назву фірми: ");
+
+                    Firm? firm = firms.FirstOrDefault(f =>
+                        f.Name.Equals(firmName, StringComparison.OrdinalIgnoreCase));
+
+                    if (firm is null)
+                    {
+                        Console.WriteLine("Фірму не знайдено.");
+                        break;
+                    }
+
+                    if (choice == 1)
+                    {
+                        Print($"Співробітники фірми «{firm.Name}»:",
+                            firm.Employees);
+                    }
+                    else
+                    {
+                        decimal salary = ReadDecimal("Введіть мінімальну зарплату: ");
+                        Print($"Співробітники «{firm.Name}» із зарплатою понад {salary}:",
+                            firm.Employees.Where(e => e.Salary > salary));
+                    }
+
+                    break;
+                }
+            case 3:
+                Print("Менеджери всіх фірм:",
+                    firms.SelectMany(f => f.Employees)
+                         .Where(e => e.Position.Equals(
+                             "Менеджер",
+                             StringComparison.OrdinalIgnoreCase)));
+                break;
+            case 4:
+                Print("Співробітники, телефон яких починається з 23:",
+                    firms.SelectMany(f => f.Employees)
+                         .Where(e => e.Phone.StartsWith("23")));
+                break;
+            case 5:
+                Print("Співробітники, Email яких починається з di:",
+                    firms.SelectMany(f => f.Employees)
+                         .Where(e => e.Email.StartsWith(
+                             "di", StringComparison.OrdinalIgnoreCase)));
+                break;
+            case 6:
+                Print("Співробітники на ім'я Lionel:",
+                    firms.SelectMany(f => f.Employees)
+                         .Where(e => GetFirstName(e.FullName).Equals(
+                             "Lionel",
+                             StringComparison.OrdinalIgnoreCase)));
+                break;
+            case 0:
+                return;
+            default:
+                Console.WriteLine("Такого пункту меню немає.");
+                break;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+static void PhonesMenu(List<Phone> phones)
+{
+    while (true)
+    {
+        Console.WriteLine("\nТелефони");
+        Console.WriteLine("1 — Кількість телефонів");
+        Console.WriteLine("2 — Кількість телефонів із ціною понад 100");
+        Console.WriteLine("3 — Кількість телефонів із ціною від 400 до 700");
+        Console.WriteLine("4 — Кількість телефонів конкретного виробника");
+        Console.WriteLine("5 — Телефон із мінімальною ціною");
+        Console.WriteLine("6 — Телефон із максимальною ціною");
+        Console.WriteLine("7 — Найстаріший телефон");
+        Console.WriteLine("8 — Найсвіжіший телефон");
+        Console.WriteLine("9 — Середня ціна");
+        Console.WriteLine("0 — Назад");
+
+        int choice = ReadInt("Ваш вибір: ");
+
+        switch (choice)
+        {
+            case 1:
+                Console.WriteLine($"Кількість телефонів: {phones.Count}");
+                break;
+            case 2:
+                Console.WriteLine(
+                    $"Телефонів із ціною понад 100: {phones.Count(p => p.Price > 100)}");
+                break;
+            case 3:
+                Console.WriteLine(
+                    $"Телефонів із ціною від 400 до 700: " +
+                    $"{phones.Count(p => p.Price >= 400 && p.Price <= 700)}");
+                break;
+            case 4:
+                {
+                    string manufacturer = ReadString("Введіть виробника: ");
+                    int count = phones.Count(p => p.Manufacturer.Equals(
+                        manufacturer, StringComparison.OrdinalIgnoreCase));
+                    Console.WriteLine($"Телефонів виробника {manufacturer}: {count}");
+                    break;
+                }
+            case 5:
+                PrintPhone("Телефон із мінімальною ціною:",
+                    phones.OrderBy(p => p.Price).FirstOrDefault());
+                break;
+            case 6:
+                PrintPhone("Телефон із максимальною ціною:",
+                    phones.OrderByDescending(p => p.Price).FirstOrDefault());
+                break;
+            case 7:
+                PrintPhone("Найстаріший телефон:",
+                    phones.OrderBy(p => p.ReleaseDate).FirstOrDefault());
+                break;
+            case 8:
+                PrintPhone("Найсвіжіший телефон:",
+                    phones.OrderByDescending(p => p.ReleaseDate).FirstOrDefault());
+                break;
+            case 9:
+                if (phones.Count > 0)
+                    Console.WriteLine($"Середня ціна: {phones.Average(p => p.Price):F2}");
+                else
+                    Console.WriteLine("Список телефонів порожній.");
+                break;
+            case 0:
+                return;
+            default:
+                Console.WriteLine("Такого пункту меню немає.");
+                break;
+        }
+    }
+}
+
+static string GetSurname(string fullName)
+{
+    string[] parts = fullName.Split(
+        ' ', StringSplitOptions.RemoveEmptyEntries);
+
+    return parts.Length > 1 ? parts[^1] : "";
+}
+
+static string GetFirstName(string fullName)
+{
+    string[] parts = fullName.Split(
+        ' ', StringSplitOptions.RemoveEmptyEntries);
+
+    return parts.Length > 0 ? parts[0] : "";
+}
+
+static int ReadInt(string prompt)
+{
+    while (true)
+    {
+        Console.Write(prompt);
+
+        if (int.TryParse(Console.ReadLine(), out int value))
+            return value;
+
+        Console.WriteLine("Введіть ціле число.");
+    }
+}
+
+static decimal ReadDecimal(string prompt)
+{
+    while (true)
+    {
+        Console.Write(prompt);
+
+        if (decimal.TryParse(Console.ReadLine(), out decimal value))
+            return value;
+
+        Console.WriteLine("Введіть коректне число.");
+    }
+}
+
+static string ReadString(string prompt)
+{
+    Console.Write(prompt);
+    return Console.ReadLine()?.Trim() ?? "";
+}
+
+static void Print<T>(string title, IEnumerable<T> items)
+{
+    Console.WriteLine($"\n{title}");
+
+    bool foundAny = false;
+
+    foreach (T item in items)
+    {
+        Console.WriteLine($"  {item}");
+        foundAny = true;
+    }
+
+    if (!foundAny)
+        Console.WriteLine("  Нічого не знайдено.");
+}
+
+static void PrintPhone(string title, Phone? phone)
+{
+    Console.WriteLine($"\n{title}");
+    Console.WriteLine(phone is null ? "  Телефонів немає." : $"  {phone}");
+}
+
+class Firm
+{
+    public string Name { get; set; } = "";
+    public DateTime FoundedAt { get; set; }
+    public string BusinessProfile { get; set; } = "";
+    public string Director { get; set; } = "";
+    public int EmployeeCount { get; set; }
+    public string Address { get; set; } = "";
+    public List<Employee> Employees { get; set; } = new();
+
+    public override string ToString()
+    {
+        return $"{Name}; профіль: {BusinessProfile}; директор: {Director}; " +
+               $"співробітників: {EmployeeCount}; заснована: {FoundedAt:yyyy-MM-dd}; " +
+               $"адреса: {Address}";
+    }
+}
+
+class Employee
+{
+    public string FullName { get; set; }
+    public string Position { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public decimal Salary { get; set; }
+
+    public Employee(
+        string fullName,
+        string position,
+        string phone,
+        string email,
+        decimal salary)
+    {
+        FullName = fullName;
+        Position = position;
+        Phone = phone;
+        Email = email;
+        Salary = salary;
+    }
+
+    public override string ToString()
+    {
+        return $"{FullName}; посада: {Position}; телефон: {Phone}; " +
+               $"email: {Email}; зарплата: {Salary:F2}";
+    }
+}
+
+class Phone
+{
+    public string Name { get; set; }
+    public string Manufacturer { get; set; }
+    public decimal Price { get; set; }
+    public DateTime ReleaseDate { get; set; }
+
+    public Phone(
+        string name,
+        string manufacturer,
+        decimal price,
+        DateTime releaseDate)
+    {
+        Name = name;
+        Manufacturer = manufacturer;
+        Price = price;
+        ReleaseDate = releaseDate;
+    }
+
+    public override string ToString()
+    {
+        return $"{Name}; виробник: {Manufacturer}; ціна: {Price:F2}; " +
+               $"дата випуску: {ReleaseDate:yyyy-MM-dd}";
+    }
+}
